@@ -16,62 +16,16 @@
                 "description": "Location for the Cosmos DB account."
             }
         },
-        "primaryRegion":{
-            "type":"string",
-            "metadata": {
-                "description": "The primary replica region for the Cosmos DB account."
-            }
-        },
-        "secondaryRegion":{
-            "type":"string",
-            "metadata": {
-              "description": "The secondary replica region for the Cosmos DB account."
-          }
-        },
-        "defaultConsistencyLevel": {
-            "type": "string",
-            "defaultValue": "Session",
-            "allowedValues": [ "Eventual", "ConsistentPrefix", "Session", "BoundedStaleness", "Strong" ],
-            "metadata": {
-                "description": "The default consistency level of the Cosmos DB account."
-            }
-        },
-        "maxStalenessPrefix": {
-            "type": "int",
-            "minValue": 10,
-            "defaultValue": 100000,
-            "maxValue": 2147483647,
-            "metadata": {
-                "description": "Max stale requests. Required for BoundedStaleness. Valid ranges, Single Region: 10 to 1000000. Multi Region: 100000 to 1000000."
-            }
-        },
-        "maxIntervalInSeconds": {
-            "type": "int",
-            "minValue": 5,
-            "defaultValue": 300,
-            "maxValue": 86400,
-            "metadata": {
-                "description": "Max lag time (minutes). Required for BoundedStaleness. Valid ranges, Single Region: 5 to 84600. Multi Region: 300 to 86400."
-            }
-        },	
-        "automaticFailover": {
-            "type": "bool",
-            "defaultValue": true,
-            "allowedValues": [ true, false ],
-            "metadata": {
-                "description": "Enable automatic failover for regions"
-            }
-        },
         "databaseName": {
             "type": "string",
-            "defaultValue": "myDatabase",
+            "defaultValue": "Players",
             "metadata": {
                 "description": "The name for the database"
             }
         },
         "containerName": {
             "type": "string",
-            "defaultValue": "myContainer",
+            "defaultValue": "Profiles",
             "metadata": {
                 "description": "The name for the container"
             }
@@ -88,35 +42,11 @@
     },
     "variables": {
         "accountName": "[toLower(parameters('accountName'))]",
-        "consistencyPolicy": {
-            "Eventual": {
-                "defaultConsistencyLevel": "Eventual"
-            },
-            "ConsistentPrefix": {
-                "defaultConsistencyLevel": "ConsistentPrefix"
-            },
-            "Session": {
-                "defaultConsistencyLevel": "Session"
-            },
-            "BoundedStaleness": {
-                "defaultConsistencyLevel": "BoundedStaleness",
-                "maxStalenessPrefix": "[parameters('maxStalenessPrefix')]",
-                "maxIntervalInSeconds": "[parameters('maxIntervalInSeconds')]"
-            },
-            "Strong": {
-                "defaultConsistencyLevel": "Strong"
-            }
-        },
         "locations": 
         [ 
             {
-                "locationName": "[parameters('primaryRegion')]",
+                "locationName": "westus",
                 "failoverPriority": 0,
-                "isZoneRedundant": false
-            }, 
-            {
-                "locationName": "[parameters('secondaryRegion')]",
-                "failoverPriority": 1,
                 "isZoneRedundant": false
             }
         ]
@@ -130,10 +60,8 @@
             "kind": "GlobalDocumentDB",
             "location": "[parameters('location')]",
             "properties": {
-                "consistencyPolicy": "[variables('consistencyPolicy')[parameters('defaultConsistencyLevel')]]",
                 "locations": "[variables('locations')]",
-                "databaseAccountOfferType": "Standard",
-                "enableAutomaticFailover": "[parameters('automaticFailover')]"
+                "databaseAccountOfferType": "Standard"
             }
         },
         {
@@ -158,53 +86,9 @@
                     "id":  "[parameters('containerName')]",
                     "partitionKey": {
                         "paths": [
-                        "/myPartitionKey"
+                        "/gamerId"
                         ],
                         "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ],
-                        "excludedPaths": [{
-                                "path": "/myPathToNotIndex/*"
-                            }
-                        ],
-                        "compositeIndexes":[  
-                        [
-                            {
-                                "path":"/name",
-                                "order":"ascending"
-                            },
-                            {
-                                "path":"/age",
-                                "order":"descending"
-                            }
-                        ]
-                    ],
-                    "spatialIndexes": [
-                            {
-                                "path": "/path/to/geojson/property/?",
-                                "types": [
-                                    "Point",
-                                    "Polygon",
-                                    "MultiPolygon",
-                                    "LineString"
-                                ]
-                            }
-                        ]
-                    },
-                    "defaultTtl": 86400,
-                    "uniqueKeyPolicy": {
-                        "uniqueKeys": [
-                        {
-                            "paths": [
-                            "/phoneNumber"
-                            ]
-                        }
-                        ]
                     }
                 },
                 "options": { "throughput": "[parameters('throughput')]" }
