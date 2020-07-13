@@ -42,14 +42,7 @@
     },
     "variables": {
         "accountName": "[toLower(parameters('accountName'))]",
-        "locations": 
-        [ 
-            {
-                "locationName": "westus",
-                "failoverPriority": 0,
-                "isZoneRedundant": false
-            }
-        ]
+        "locations": "[resourceGroup().location]"
     },
     "resources": 
     [

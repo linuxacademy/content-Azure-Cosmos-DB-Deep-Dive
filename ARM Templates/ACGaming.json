@@ -57,14 +57,7 @@
     "variables": {
         "docAccountName": "[toLower(parameters('docAccountName'))]",
         "tableAccountName": "[toLower(parameters('tableAccountName'))]",
-        "locations": 
-        [ 
-            {
-                "locationName": "westus",
-                "failoverPriority": 0,
-                "isZoneRedundant": false
-            }
-        ]
+        "locations": "[resourceGroup().location]"
     },
     "resources": 
     [

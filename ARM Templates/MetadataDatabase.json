@@ -18,6 +18,7 @@
         },	
         "tableName": {
             "type": "string",
+            "defaultValue": "Session",
             "metadata": {
                 "description": "The name for the table"
             }
@@ -34,14 +35,7 @@
     },
     "variables": {
         "accountName": "[toLower(parameters('accountName'))]",
-        "locations": 
-        [ 
-            {
-                "locationName": "westus",
-                "failoverPriority": 0,
-                "isZoneRedundant": false
-            }
-        ]
+        "locations": "[resourceGroup().location]"
     },
     "resources": 
     [
