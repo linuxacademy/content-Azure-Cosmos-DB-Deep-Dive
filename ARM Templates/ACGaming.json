@@ -39,7 +39,7 @@
         },
         "tableName": {
             "type": "string",
-            "defaultValue": "Session",
+            "defaultValue": "Sessions",
             "metadata": {
                 "description": "The name for the table"
             }
