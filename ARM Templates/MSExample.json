@@ -4,9 +4,9 @@
     "parameters": {
         "accountName": {
             "type": "string",
-            "defaultValue": "[concat('sql-', uniqueString(resourceGroup().id))]",
+            "defaultValue": "[concat('table-', uniqueString(resourceGroup().id))]",
             "metadata": {
-                "description": "Cosmos DB account name, max length 44 characters"
+                "description": "Cosmos DB account name"
             }
         },
         "location": {
@@ -38,8 +38,8 @@
         },
         "maxStalenessPrefix": {
             "type": "int",
-            "minValue": 10,
             "defaultValue": 100000,
+            "minValue": 10,
             "maxValue": 2147483647,
             "metadata": {
                 "description": "Max stale requests. Required for BoundedStaleness. Valid ranges, Single Region: 10 to 1000000. Multi Region: 100000 to 1000000."
@@ -47,11 +47,11 @@
         },
         "maxIntervalInSeconds": {
             "type": "int",
-            "minValue": 5,
             "defaultValue": 300,
+            "minValue": 5,
             "maxValue": 86400,
             "metadata": {
-                "description": "Max lag time (minutes). Required for BoundedStaleness. Valid ranges, Single Region: 5 to 84600. Multi Region: 300 to 86400."
+                "description": "Max lag time (seconds). Required for BoundedStaleness. Valid ranges, Single Region: 5 to 84600. Multi Region: 300 to 86400."
             }
         },	
         "automaticFailover": {
@@ -59,21 +59,13 @@
             "defaultValue": true,
             "allowedValues": [ true, false ],
             "metadata": {
-                "description": "Enable automatic failover for regions"
+                "description": "Enable automatic failover for regions. Ignored when Multi-Master is enabled"
             }
         },
-        "databaseName": {
+        "tableName": {
             "type": "string",
-            "defaultValue": "myDatabase",
             "metadata": {
-                "description": "The name for the database"
-            }
-        },
-        "containerName": {
-            "type": "string",
-            "defaultValue": "myContainer",
-            "metadata": {
-                "description": "The name for the container"
+                "description": "The name for the table"
             }
         },
         "throughput": {
@@ -82,8 +74,8 @@
             "minValue": 400,
             "maxValue": 1000000,
             "metadata": {
-                "description": "The throughput for the container"
-            }			
+                "description": "The throughput for the table"
+            }
         }
     },
     "variables": {
@@ -127,9 +119,10 @@
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "name": "[variables('accountName')]",
             "apiVersion": "2020-03-01",
-            "kind": "GlobalDocumentDB",
             "location": "[parameters('location')]",
+            "kind": "GlobalDocumentDB",
             "properties": {
+                "capabilities": [{ "name": "EnableTable" }],
                 "consistencyPolicy": "[variables('consistencyPolicy')[parameters('defaultConsistencyLevel')]]",
                 "locations": "[variables('locations')]",
                 "databaseAccountOfferType": "Standard",
@@ -137,75 +130,13 @@
             }
         },
         {
-            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
-            "name": "[concat(variables('accountName'), '/', parameters('databaseName'))]",
+            "type": "Microsoft.DocumentDB/databaseAccounts/tables",
+            "name": "[concat(variables('accountName'), '/', parameters('tableName'))]",
             "apiVersion": "2020-03-01",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]" ],
+            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/', variables('accountName'))]" ],
             "properties":{
                 "resource":{
-                    "id": "[parameters('databaseName')]"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
-            "name": "[concat(variables('accountName'), '/', parameters('databaseName'), '/', parameters('containerName'))]",
-            "apiVersion": "2020-03-01",
-            "dependsOn": [ "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]" ],
-            "properties":
-            {
-                "resource":{
-                    "id":  "[parameters('containerName')]",
-                    "partitionKey": {
-                        "paths": [
-                        "/myPartitionKey"
-                        ],
-                        "kind": "Hash"
-                    },
-                    "indexingPolicy": {
-                        "indexingMode": "consistent",
-                        "includedPaths": [{
-                                "path": "/*"
-                            }
-                        ],
-                        "excludedPaths": [{
-                                "path": "/myPathToNotIndex/*"
-                            }
-                        ],
-                        "compositeIndexes":[  
-                        [
-                            {
-                                "path":"/name",
-                                "order":"ascending"
-                            },
-                            {
-                                "path":"/age",
-                                "order":"descending"
-                            }
-                        ]
-                    ],
-                    "spatialIndexes": [
-                            {
-                                "path": "/path/to/geojson/property/?",
-                                "types": [
-                                    "Point",
-                                    "Polygon",
-                                    "MultiPolygon",
-                                    "LineString"
-                                ]
-                            }
-                        ]
-                    },
-                    "defaultTtl": 86400,
-                    "uniqueKeyPolicy": {
-                        "uniqueKeys": [
-                        {
-                            "paths": [
-                            "/phoneNumber"
-                            ]
-                        }
-                        ]
-                    }
+                    "id": "[parameters('tableName')]"
                 },
                 "options": { "throughput": "[parameters('throughput')]" }
             }
