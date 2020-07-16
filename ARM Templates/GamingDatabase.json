@@ -41,8 +41,7 @@
         }
     },
     "variables": {
-        "accountName": "[toLower(parameters('accountName'))]",
-        "locations": "[resourceGroup().location]"
+        "accountName": "[toLower(parameters('accountName'))]"
     },
     "resources": 
     [
@@ -53,7 +52,6 @@
             "kind": "GlobalDocumentDB",
             "location": "[parameters('location')]",
             "properties": {
-                "locations": "[variables('locations')]",
                 "databaseAccountOfferType": "Standard"
             }
         },
