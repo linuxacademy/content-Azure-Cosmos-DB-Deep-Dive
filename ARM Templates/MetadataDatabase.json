@@ -18,12 +18,14 @@
         },
         "primaryRegion":{
             "type":"string",
+            "defaultValue": "westus",
             "metadata": {
                 "description": "The primary replica region for the Cosmos DB account."
             }
         },
         "secondaryRegion":{
             "type":"string",
+            "defaultValue": "eastus",
             "metadata": {
               "description": "The secondary replica region for the Cosmos DB account."
           }
@@ -64,6 +66,7 @@
         },
         "tableName": {
             "type": "string",
+            "defaultValue": "Sessions",
             "metadata": {
                 "description": "The name for the table"
             }
