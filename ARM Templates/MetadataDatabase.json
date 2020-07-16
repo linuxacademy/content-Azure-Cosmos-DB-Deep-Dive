@@ -4,7 +4,7 @@
     "parameters": {
         "accountName": {
             "type": "string",
-            "defaultValue": "[concat('acmetadata-', uniqueString(resourceGroup().id))]",
+            "defaultValue": "[concat('acmetadata-', substring( uniquestring(resourceGroup().id), 0, 5 ) ) )]",
             "metadata": {
                 "description": "Cosmos DB account name"
             }
@@ -15,7 +15,7 @@
             "metadata": {
                 "description": "Location for the Cosmos DB account."
             }
-        },	
+        },
         "tableName": {
             "type": "string",
             "defaultValue": "Sessions",
