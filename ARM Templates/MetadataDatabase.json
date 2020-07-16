@@ -4,7 +4,7 @@
     "parameters": {
         "accountName": {
             "type": "string",
-            "defaultValue": "[concat('acmetadata-', substring( uniquestring(resourceGroup().id), 0, 5 ) ) )]",
+            "defaultValue": "[concat('table-', uniqueString(resourceGroup().id))]",
             "metadata": {
                 "description": "Cosmos DB account name"
             }
