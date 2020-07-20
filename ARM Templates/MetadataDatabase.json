@@ -4,7 +4,7 @@
     "parameters": {
         "accountName": {
             "type": "string",
-            "defaultValue": "[concat('acmeta-', uniqueString(resourceGroup().id))]",
+            "defaultValue": "[concat('acmetadata-', uniqueString(resourceGroup().id))]",
             "metadata": {
                 "description": "Cosmos DB account name"
             }
@@ -16,8 +16,50 @@
                 "description": "Location for the Cosmos DB account."
             }
         },
+        "primaryRegion":{
+            "type":"string",
+            "defaultValue": "westus",
+            "metadata": {
+                "description": "The primary replica region for the Cosmos DB account."
+            }
+        },
+        "defaultConsistencyLevel": {
+            "type": "string",
+            "defaultValue": "Eventual",
+            "allowedValues": [ "Eventual", "ConsistentPrefix", "Session", "BoundedStaleness", "Strong" ],
+            "metadata": {
+                "description": "The default consistency level of the Cosmos DB account."
+            }
+        },
+        "maxStalenessPrefix": {
+            "type": "int",
+            "defaultValue": 100000,
+            "minValue": 10,
+            "maxValue": 2147483647,
+            "metadata": {
+                "description": "Max stale requests. Required for BoundedStaleness. Valid ranges, Single Region: 10 to 1000000. Multi Region: 100000 to 1000000."
+            }
+        },
+        "maxIntervalInSeconds": {
+            "type": "int",
+            "defaultValue": 300,
+            "minValue": 5,
+            "maxValue": 86400,
+            "metadata": {
+                "description": "Max lag time (seconds). Required for BoundedStaleness. Valid ranges, Single Region: 5 to 84600. Multi Region: 300 to 86400."
+            }
+        },
+        "automaticFailover": {
+            "type": "bool",
+            "defaultValue": false,
+            "allowedValues": [ true, false ],
+            "metadata": {
+                "description": "Enable automatic failover for regions. Ignored when Multi-Master is enabled"
+            }
+        },
         "tableName": {
             "type": "string",
+            "defaultValue": "Sessions",
             "metadata": {
                 "description": "The name for the table"
             }
@@ -33,7 +75,34 @@
         }
     },
     "variables": {
-        "accountName": "[toLower(parameters('accountName'))]"
+        "accountName": "[toLower(parameters('accountName'))]",
+        "consistencyPolicy": {
+            "Eventual": {
+                "defaultConsistencyLevel": "Eventual"
+            },
+            "ConsistentPrefix": {
+                "defaultConsistencyLevel": "ConsistentPrefix"
+            },
+            "Session": {
+                "defaultConsistencyLevel": "Session"
+            },
+            "BoundedStaleness": {
+                "defaultConsistencyLevel": "BoundedStaleness",
+                "maxStalenessPrefix": "[parameters('maxStalenessPrefix')]",
+                "maxIntervalInSeconds": "[parameters('maxIntervalInSeconds')]"
+            },
+            "Strong": {
+                "defaultConsistencyLevel": "Strong"
+            }
+        },
+        "locations": 
+        [ 
+            {
+                "locationName": "[parameters('primaryRegion')]",
+                "failoverPriority": 0,
+                "isZoneRedundant": false
+            }
+        ]
     },
     "resources": 
     [
@@ -45,7 +114,10 @@
             "kind": "GlobalDocumentDB",
             "properties": {
                 "capabilities": [{ "name": "EnableTable" }],
-                "databaseAccountOfferType": "Standard"
+                "consistencyPolicy": "[variables('consistencyPolicy')[parameters('defaultConsistencyLevel')]]",
+                "locations": "[variables('locations')]",
+                "databaseAccountOfferType": "Standard",
+                "enableAutomaticFailover": "[parameters('automaticFailover')]"
             }
         },
         {
