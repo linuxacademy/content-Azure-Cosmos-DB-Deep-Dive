@@ -114,6 +114,9 @@
             "kind": "GlobalDocumentDB",
             "properties": {
                 "capabilities": [{ "name": "EnableTable" }],
+                "enableMultipleWriteLocations": false,
+                "enableFreeTier": false,
+                "enableAnalyticalStorage": false,
                 "consistencyPolicy": "[variables('consistencyPolicy')[parameters('defaultConsistencyLevel')]]",
                 "locations": "[variables('locations')]",
                 "databaseAccountOfferType": "Standard",
