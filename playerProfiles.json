@@ -1,0 +1,38 @@
+[
+    {
+        "gamerId": "7777",
+        "team": "red",
+        "gamerTag": "Darth Delmar",
+        "statusMessage": "glhf :)",
+        "isOnline": true
+    },
+    {
+        "gamerId": "8888",
+        "team": "blue",
+        "gamerTag": "Lando Commando",
+        "statusMessage": "To victory and beyond!",
+        "isOnline": false
+    }
+    ,
+    {
+        "gamerId": "9999",
+        "team": "red",
+        "gamerTag": "Anarchy Amanda",
+        "statusMessage": "Queen of all",
+        "isOnline": false
+    },
+    {
+        "gamerId": "1111",
+        "team": "red",
+        "gamerTag": "Carson the Conqueror",
+        "statusMessage": "Time’s up, let's do this!",
+        "isOnline": false
+    },
+    {
+        "gamerId": "2222",
+        "team": "blue",
+        "gamerTag": "Calamity Caleb",
+        "statusMessage": "One game to bring them all and in the fun bind them",
+        "isOnline": false
+    }
+]
