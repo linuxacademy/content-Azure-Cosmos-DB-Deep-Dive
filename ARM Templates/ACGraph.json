@@ -170,7 +170,7 @@
             ],
             "properties": {
                 "resource": {
-                    "id": "[variables('graphName')]",
+                    "id": "[parameters('graphName')]",
                     "partitionKey": {
                         "paths": [
                             "/gamerId"
