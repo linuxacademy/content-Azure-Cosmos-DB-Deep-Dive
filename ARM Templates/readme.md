@@ -1,8 +1,10 @@
 # ARM Templates
 
-The templates in this directory represent the ones used as examples within the course videos and hands-on labs. They will evolve over time as bugs are fixed and improvements are found, so they may not look exactly as pictured within the videos.
+The templates in this directory correlate to the ones used as examples within the course videos and hands-on labs. They will evolve over time as bugs are fixed and improvements are found, so they may not look exactly as pictured within the videos.
 
 **Templates:**
-* GamingDatabase.json: This is a document database using the Core (SQL) API. It has the "Players" database and "Profiles" container.
-* MetadataDatabase.json: This is a metadata database using the Table API. It has the "Sessions" table.
-* ACGaming.json: This is a combination of the other two templates, pre-provisioning both the "Players" and metatdata databases.
+* ACGaming.json: *Core (SQL) API*. This is the account for the "Players" database and "Profiles" container.
+* ACGamingCharacters: *MongoDB API*. This is the account for the "Characters" database, where various builds can be specified.
+* ACMetadata.json: *Azure Table API*. This is account for the "Sessions" metadata table.
+* ACSCoring.json: *Cassandra API*. This is the account for the "leaderboard" keyspace and the "scores" table.
+* ACGraph.json: *Gremlin API*. This is the account for the "relationships" database and the "playerConnections" graph.
